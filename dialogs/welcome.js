@@ -17,7 +17,7 @@ module.exports = function(bot) {
           session.send("Glad you're back!");
         }
   
-        session.endDialog('How can I help you?');
+        session.endDialog('How can I help you?');        
       }
     ]);
   };

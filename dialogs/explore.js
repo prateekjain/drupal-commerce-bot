@@ -1,4 +1,7 @@
 const builder = require('botbuilder');
+const commerceApi = require('../api/commerceApi');
+var constantsList = require('../constantsList');
+
 
 const extractQuery = (session, args) => {
   if (args && args.entities && args.entities.length) {
@@ -9,7 +12,7 @@ const extractQuery = (session, args) => {
 
     return `${(detail || { entity: '' }).entity} ${
       (question || { entity: '' }).entity
-    }`.trim();
+      }`.trim();
   } else if (session.message.text.split(' ').length <= 2) {
     // just assume they typed a category or a product name
     return session.message.text.replace('please', '').trim();
@@ -18,9 +21,9 @@ const extractQuery = (session, args) => {
   }
 };
 
-module.exports = function(bot) {
+module.exports = function (bot) {
   bot.dialog('/explore', [
-    function(session, args, next) {
+    function (session, args, next) {
       const query = extractQuery(session, args);
       console.log("Query is " + query);
       if (!query) {
@@ -33,16 +36,43 @@ module.exports = function(bot) {
         next({ response: query });
       }
     },
-    function(session, args, next) {
-      session.sendTyping();
+    function (session, args, next) {
+      
 
       const query = args.response;
-      
+
       builder.Prompts.text(
         session,
         `Got it. Let me find ${query} for you`
       );
-      
+
+      session.sendTyping();
+      commerceApi.search(query).then((searchResult) => {
+        if (searchResult && searchResult.length) {
+          builder.Prompts.text(
+            session,
+            `We have found ${searchResult.length} search results for you`
+          );
+
+
+          var productCards = getCardsAttachments(session, searchResult);
+
+          // create reply with Carousel AttachmentLayout
+          var reply = new builder.Message(session)
+            .attachmentLayout(builder.AttachmentLayout.carousel)
+            .attachments(productCards);
+
+          session.send(reply);
+
+        }
+        else {
+          session.endDialog(
+            `I tried looking for ${query} but I couldn't find anything, sorry!`
+          );
+        }
+      });
+
+
       /* session.endDialog(
         `I tried looking for ${query} but I couldn't find anything, sorry!`
       ); */
@@ -93,7 +123,7 @@ module.exports = function(bot) {
   ]);
 
   bot.dialog('/next', [
-    function(session, args, next) {
+    function (session, args, next) {
       if (
         !session.privateConversationData ||
         !session.privateConversationData.list
@@ -142,6 +172,28 @@ module.exports = function(bot) {
   ]);
 };
 
+
+function getCardsAttachments(session, searchResult) {
+
+  var productCardArray = [];
+  if (searchResult && searchResult.length) {
+    for (i = 0; i < searchResult.length; i++) {
+      productCardArray.push(
+        new builder.ThumbnailCard(session)
+          .title(searchResult[i].title)
+          .subtitle(searchResult[i].type)
+          .text(searchResult[i].body)
+          .buttons([
+            builder.CardAction.postBack(session, `@show:${searchResult[i].title}`, 'Show me')
+          ])
+          .images([
+            builder.CardImage.create(session, constantsList.baseURL + searchResult[i].field_image)
+          ])
+      );
+    }
+  }
+  return productCardArray;
+}
 
 
 /* module.exports = function(bot) {

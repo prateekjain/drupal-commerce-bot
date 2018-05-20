@@ -5,9 +5,9 @@
   "main": "index.js",
   "dependencies": {
     "botbuilder": "^3.15.0",
+    "express": "^4.16.2",
     "node-sass": "^4.9.0",
-    "request": "^2.81.0",
-    "express": "^4.16.2"
+    "request": "^2.86.0"
   },
   "devDependencies": {},
   "scripts": {
