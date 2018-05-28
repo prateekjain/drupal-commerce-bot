@@ -62,7 +62,7 @@ module.exports = function (bot) {
             .attachmentLayout(builder.AttachmentLayout.carousel)
             .attachments(productCards);
 
-          session.send(reply);
+          session.endDialog(reply);
 
         }
         else {
@@ -184,10 +184,12 @@ function getCardsAttachments(session, searchResult) {
           .subtitle(searchResult[i].type)
           .text(searchResult[i].body)
           .buttons([
-            builder.CardAction.postBack(session, `@show:${searchResult[i].title}`, 'Show me')
+            builder.CardAction.postBack(session, `@show:${searchResult[i].product_id}`, 'Show me')
           ])
           .images([
-            builder.CardImage.create(session, constantsList.baseURL + searchResult[i].field_image)
+            builder.CardImage.create(session, constantsList.baseURL + searchResult[i].field_image).tap(
+              builder.CardAction.postBack(session, `@show:${searchResult[i].product_id}`)
+            )
           ])
       );
     }

@@ -6,11 +6,13 @@ const greeting = require('./recognizer/greeting');
 const commands = require('./recognizer/commands');
 const smiles = require('./recognizer/smiles');
 
+
 const dialog = {
     welcome: require('./dialogs/welcome'),
     categories: require('./dialogs/categories'),
     explore: require('./dialogs/explore'),
     choseVariant: require('./dialogs/choseVariant'),
+    showProduct: require('./dialogs/showProduct'),
     showVariant: require('./dialogs/showVariant'),
     addToCart: require('./dialogs/addToCart'),
     showCart: require('./dialogs/showCart')
@@ -18,9 +20,7 @@ const dialog = {
 
 // Setup Express Server
 const server = express();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
-    console.log('Express HTTP is ready and is accepting connections');
-});
+
 
 // Create chat connector for communicating with the Bot Framework Service
 /*var connector = new builder.ChatConnector({
@@ -33,13 +33,20 @@ var connector = new builder.ChatConnector({
     appPassword: null
 });
 
+server.get(`/`, (_, res) => res.sendFile(path.join(__dirname + '/index.html')));
 // Listen for messages from users
 server.post('/api/messages', connector.listen());
+
+server.listen(process.env.port || process.env.PORT || 3978, function () {
+    console.log('Express HTTP is ready and is accepting connections');
+});
 
 //Set the memorystorage
 var inMemoryStorage = new builder.MemoryBotStorage();
 
-var bot = new builder.UniversalBot(connector).set('storage', inMemoryStorage); // Register in memory storage
+var bot = new builder.UniversalBot(connector, {
+    privateConversationData: true
+}).set('storage', inMemoryStorage); // Register in memory storage
 
 // Send welcome when conversation with bot is started, by initiating the root dialog
 /* bot.on('conversationUpdate', function (message) {
@@ -115,6 +122,7 @@ var intents = new builder.IntentDialog({
 intents.matches('Greeting', '/welcome');
 intents.matches('ShowTopCategories', '/categories');
 intents.matches('Explore', '/explore');
+intents.matches('ShowProduct', '/showProduct');
 intents.matches('AddToCart', '/addToCart');
 intents.matches('ShowCart', '/showCart');
 intents.matches('Checkout', '/checkout');
@@ -126,6 +134,7 @@ bot.dialog('/', intents);
 dialog.welcome(bot);
 dialog.categories(bot);
 dialog.explore(bot);
+dialog.showProduct(bot);
 dialog.choseVariant(bot);
 dialog.showVariant(bot);
 dialog.addToCart(bot);
@@ -144,7 +153,7 @@ bot.dialog('/confused', [
     }
 ]);
 
-bot.on('routing', smiles.smileBack.bind(smiles));
+//bot.on('routing', smiles.smileBack.bind(smiles));
 
 bot.dialog('/reset', [
     function (session, args, next) {

@@ -40,5 +40,9 @@ module.exports = {
         //     }
         //     console.log(JSON.parse(body));
         // });
-    }
+    },
+    findProductById: function(product) {
+        //return this.search(`$filter=id eq '${product}'`);
+        return this.search(`mauris`);
+    },
 }

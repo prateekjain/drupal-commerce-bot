@@ -92,7 +92,8 @@ const parse = {
 module.exports = {
   recognize: function(context, callback) {
     const text = context.message.text;
-
+    console.log("------");
+    console.log("in this custom recognize - " + text);
     if (!text.startsWith('@') && !['next', 'more'].includes(text)) {
       callback.call(null, null, unrecognized);
     } else {

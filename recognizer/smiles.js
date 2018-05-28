@@ -34,8 +34,17 @@ module.exports = {
 
     const smile = this.detect(text, channel);
 
+    const recognized = {
+      entities: [],
+      intent: null,
+      matched: undefined,
+      expression: undefined,
+      intents: [],
+      score: 0
+    };
+
     if (!smile) {
-      callback();
+      callback.call(null,null,recognized);
     } else {
       console.log('Sending back a smily face [%s]', smile);
 
