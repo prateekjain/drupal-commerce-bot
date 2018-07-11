@@ -80,7 +80,7 @@ function listCategoriesCard(session) {
               "selectAction": {
             "type": "Action.Submit",
             "title": "Interested in drinks",
-            "data": "Interested in drinks"
+            "data": "Interested in turpis"
           }
             }
           ]

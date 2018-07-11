@@ -15,7 +15,8 @@ const dialog = {
     showProduct: require('./dialogs/showProduct'),
     showVariant: require('./dialogs/showVariant'),
     addToCart: require('./dialogs/addToCart'),
-    showCart: require('./dialogs/showCart')
+    showCart: require('./dialogs/showCart'),
+    checkout: require('./dialogs/checkout')
 }
 
 // Setup Express Server
@@ -139,6 +140,7 @@ dialog.choseVariant(bot);
 dialog.showVariant(bot);
 dialog.addToCart(bot);
 dialog.showCart(bot);
+dialog.checkout(bot);
 
 bot.dialog('/confused', [
     function (session, args, next) {
@@ -161,20 +163,20 @@ bot.dialog('/reset', [
     }
 ]);
 
-bot.dialog('/checkout', [
-    function (session, args, next) {
-        const cart = session.privateConversationData.cart;
+// bot.dialog('/checkout', [
+//     function (session, args, next) {
+//         const cart = session.privateConversationData.cart;
 
-        if (!cart || !cart.length) {
-            session.send(
-                'I would be happy to check you out but your cart appears to be empty. Look around and see if you like anything'
-            );
-            session.reset('/categories');
-        } else {
-            session.endDialog('Alright! You are all set!');
-        }
-    }
-]);
+//         if (!cart || !cart.length) {
+//             session.send(
+//                 'I would be happy to check you out but your cart appears to be empty. Look around and see if you like anything'
+//             );
+//             session.reset('/categories');
+//         } else {
+//             session.endDialog('Alright! You are all set!');
+//         }
+//     }
+// ]);
 
 
 // send simple notification
