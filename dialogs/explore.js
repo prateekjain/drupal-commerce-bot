@@ -24,8 +24,9 @@ const extractQuery = (session, args) => {
 module.exports = function (bot) {
   bot.dialog('/explore', [
     function (session, args, next) {
+      console.log(args);
       const query = extractQuery(session, args);
-      console.log("Query is " + query);
+      //console.log("Query is " + query);
       if (!query) {
         // ToDo: randomize across a few different sentences
         builder.Prompts.text(
@@ -37,7 +38,6 @@ module.exports = function (bot) {
       }
     },
     function (session, args, next) {
-      
 
       const query = args.response;
 
@@ -47,13 +47,13 @@ module.exports = function (bot) {
       );
 
       session.sendTyping();
+
       commerceApi.search(query).then((searchResult) => {
         if (searchResult && searchResult.length) {
           builder.Prompts.text(
             session,
             `We have found ${searchResult.length} search results for you`
           );
-
 
           var productCards = getCardsAttachments(session, searchResult);
 
@@ -184,7 +184,7 @@ function getCardsAttachments(session, searchResult) {
           .subtitle(searchResult[i].type)
           .text(searchResult[i].body)
           .buttons([
-            builder.CardAction.postBack(session, `@show:${searchResult[i].product_id}`, 'Show me')
+            builder.CardAction.postBack(session, `@show:${searchResult[i].product_id}`, 'Show Details')
           ])
           .images([
             builder.CardImage.create(session, constantsList.baseURL + searchResult[i].field_image).tap(

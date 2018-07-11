@@ -8,7 +8,7 @@ module.exports = {
         var options = {
             url: constantsList.baseURL + `/rest/products-search?search_api_fulltext=${searchItem}&_format=hal_json`,
             headers: {
-                'Authorization': 'Basic YWRtaW46YWRtaW4=',
+                //'Authorization': 'Basic YWRtaW46YWRtaW4=',
                 'Content-Type': 'application/hal_json'
             }
         };
@@ -26,9 +26,15 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             Request.get(options, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
+                    console.log("----Success---");
+                    //console.log(JSON.parse(body));
                     resolve(JSON.parse(body));
                 }
                 else {
+                    console.log("----Failure----");
+                    console.log(error);
+                    console.log(response.statusCode);
+                    //console.log(response);
                     reject(error);
                 }                
             });

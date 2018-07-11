@@ -1,7 +1,7 @@
 const builder = require('botbuilder');
 const commerceApi = require('../api/commerceApi');
 
-const showProduct = function(session, product) {
+const showProduct = function (session, product) {
   session.sendTyping();
 
   const tile = new builder.HeroCard(session)
@@ -10,14 +10,14 @@ const showProduct = function(session, product) {
     .text(product.description)
     .buttons(
       product.modifiers.length === 0 ||
-      (product.size.length <= 1 && product.color.length <= 1)
+        (product.size.length <= 1 && product.color.length <= 1)
         ? [
-            builder.CardAction.postBack(
-              session,
-              `@add:${product.id}`,
-              'Add To Cart'
-            )
-          ]
+          builder.CardAction.postBack(
+            session,
+            `@add:${product.id}`,
+            'Add To Cart'
+          )
+        ]
         : []
     )
     .images([builder.CardImage.create(session, product.image)]);
@@ -25,14 +25,17 @@ const showProduct = function(session, product) {
   session.send(new builder.Message(session).attachments([tile]));
 };
 
-module.exports = function(bot) {
+module.exports = function (bot) {
   bot.dialog('/showProduct', [
-    function(session, args, next) {
+    function (session, args, next) {
+
+      console.log("In show product");
+      
       if (!args) {
         return session.reset('/confused');
       }
 
-    console.log("In show product");
+
       const product = builder.EntityRecognizer.findEntity(
         args.entities,
         'Product'
@@ -47,7 +50,7 @@ module.exports = function(bot) {
         next({ response: product.entity });
       }
     },
-    function(session, args, next) {
+    function (session, args, next) {
       session.sendTyping();
 
       const product = args.response;
@@ -83,8 +86,8 @@ module.exports = function(bot) {
             builder.Prompts.confirm(
               session,
               `This product comes in differnet ` +
-                item.modifiers.map(mod => `${mod}s`).join(' and ') +
-                '. Would you like to choose one that fits you?',
+              item.modifiers.map(mod => `${mod}s`).join(' and ') +
+              '. Would you like to choose one that fits you?',
               { listStyle: builder.ListStyle.button }
             );
           }
@@ -93,7 +96,7 @@ module.exports = function(bot) {
           console.error(err);
         });
     },
-    function(session, args, next) {
+    function (session, args, next) {
       if (args.response) {
         session.beginDialog('/choseVariant', {
           product: session.dialogData.product
@@ -105,7 +108,7 @@ module.exports = function(bot) {
         next();
       }
     },
-    function(session, args, next) {
+    function (session, args, next) {
       const color =
         args &&
         args.response &&
@@ -120,14 +123,14 @@ module.exports = function(bot) {
       // ToDo: I wonder if it's still here after we ran another dialog on top of the current one or if I need to cary it back
       const product = session.dialogData.product;
 
-     /*  search.findVariantForProduct(product.id, color, size).then(variant => {
-        if (color || size) {
-          session.sendTyping();
-          session.reset('/showVariant', { product, variant });
-        } else {
-          session.endDialog();
-        }
-      }); */
+      /*  search.findVariantForProduct(product.id, color, size).then(variant => {
+         if (color || size) {
+           session.sendTyping();
+           session.reset('/showVariant', { product, variant });
+         } else {
+           session.endDialog();
+         }
+       }); */
     }
   ]);
 };

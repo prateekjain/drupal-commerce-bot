@@ -23,15 +23,15 @@ const server = express();
 
 
 // Create chat connector for communicating with the Bot Framework Service
-var connector = new builder.ChatConnector({
+/*var connector = new builder.ChatConnector({
   appId: process.env.MicrosoftAppId,
   appPassword: process.env.MicrosoftAppPassword
-});
+});*/
 
-/*var connector = new builder.ChatConnector({
+var connector = new builder.ChatConnector({
     appId: null,
     appPassword: null
-});*/
+});
 
 server.get(`/`, (_, res) => res.sendFile(path.join(__dirname + '/index.html')));
 // Listen for messages from users
@@ -157,7 +157,7 @@ bot.dialog('/confused', [
 
 bot.dialog('/reset', [
     function (session, args, next) {
-        session.endConversation(['Ok. Let\'s start again !! ', 'Wiping my memory. Let\'s start again !!']);
+        session.endConversation(['Ok. Let\'s start again !! ', 'Wiping my memory. Let\'s start again !!']);        
     }
 ]);
 
