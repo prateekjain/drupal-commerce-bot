@@ -43,7 +43,7 @@ function listCategoriesCard(session) {
                 {
                   "type": "Image",
                   "url": "http://www.clker.com/cliparts/F/X/i/9/M/1/pizza-hi.png",
-                  "size": "auto",
+                  "size": "medium",
                   "horizontalAlignment": "center"
                 },
                 {
@@ -66,7 +66,7 @@ function listCategoriesCard(session) {
                 {
                   "type": "Image",
                   "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNT8WMcumnj-e5rmM9IX6ke7yq7NJlaPqhmHi_I93RP7KbpuzH5A",
-                  "size": "auto",
+                  "size": "medium",
                   "horizontalAlignment": "center"
                 },
                 {
