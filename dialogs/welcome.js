@@ -7,7 +7,7 @@ module.exports = function (bot) {
       const lastVisit = session.userData.lastVisit;
 
       session.send(['Hello!', 'Hi there!', 'Hi!']);
-
+      
       if (!lastVisit) {
         session.send(
           new builder.Message(session).addAttachment(createWelcomeCard(session))
