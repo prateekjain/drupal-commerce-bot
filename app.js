@@ -1,6 +1,7 @@
 const express = require('express');
 var builder = require('botbuilder');
 var constantsList = require('./constantsList');
+var path = require("path");
 
 const greeting = require('./recognizer/greeting');
 const commands = require('./recognizer/commands');
@@ -34,6 +35,7 @@ var connector = new builder.ChatConnector({
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
+console.log(path.join(__dirname + '/index.html'));
 server.get(`/`, (_, res) => res.sendFile(path.join(__dirname + '/index.html')));
 // Listen for messages from users
 server.post('/api/messages', connector.listen());

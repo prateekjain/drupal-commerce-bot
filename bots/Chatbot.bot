@@ -10,6 +10,14 @@
             "appPassword": "",
             "endpoint": "http://localhost:3978/api/messages",
             "name": "http://localhost:3978/api/messages"
+        },
+        {
+            "appId": "",
+            "id": "48d81840-89a9-11e8-8d96-3956066a6e42",
+            "type": "endpoint",
+            "appPassword": "",
+            "endpoint": "https://drupal-commerce-bot.herokuapp.com/api/message",
+            "name": "Heroku - Drupal Commerce"
         }
     ]
 }
