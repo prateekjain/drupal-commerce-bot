@@ -46,7 +46,7 @@ function listCategoriesCard(session) {
               "items": [            
                 {
                   "type": "Image",
-                  "url": "http://www.clker.com/cliparts/F/X/i/9/M/1/pizza-hi.png",
+                  "url": "https://master-7rqtwti-rvsuscbxmkade.us.platform.sh/sites/default/files/inline-images/Pizza.png",
                   "size": "medium",
                   "horizontalAlignment": "center"
                 },
@@ -69,7 +69,7 @@ function listCategoriesCard(session) {
               "items": [            
                 {
                   "type": "Image",
-                  "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNT8WMcumnj-e5rmM9IX6ke7yq7NJlaPqhmHi_I93RP7KbpuzH5A",
+                  "url": "https://master-7rqtwti-rvsuscbxmkade.us.platform.sh/sites/default/files/inline-images/Cold-Drink-Can.png",
                   "size": "medium",
                   "horizontalAlignment": "center"
                 },
@@ -84,7 +84,7 @@ function listCategoriesCard(session) {
               "selectAction": {
             "type": "Action.Submit",
             "title": "Interested in drinks",
-            "data": "Interested in turpis"
+            "data": "Interested in drinks"
           }
             }
           ]

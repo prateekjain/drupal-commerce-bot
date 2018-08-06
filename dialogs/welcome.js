@@ -33,6 +33,6 @@ function createWelcomeCard(session) {
     .title(constantsList.welcomeMessage)
     .subtitle(constantsList.welcomeSubTitle)
     .images([
-      builder.CardImage.create(session, 'https://ae01.alicdn.com/kf/HTB13w_FKpXXXXXVaXXXq6xXFXXXa/Free-Shipping-3D-custom-sushi-letters-mural-borderless-restaurant-pizza-store-coffee-shop-wallpaper-mural.jpg_640x640.jpg')
+      builder.CardImage.create(session, 'https://master-7rqtwti-rvsuscbxmkade.us.platform.sh/sites/default/files/inline-images/Pizza-Bot-facebook-cover-828X315.jpg')
     ]);
 }

@@ -29,12 +29,9 @@ module.exports = function (bot) {
   bot.dialog('/showProduct', [
     function (session, args, next) {
 
-      console.log("In show product");
-      
       if (!args) {
         return session.reset('/confused');
       }
-
 
       const product = builder.EntityRecognizer.findEntity(
         args.entities,
@@ -54,6 +51,9 @@ module.exports = function (bot) {
       session.sendTyping();
 
       const product = args.response;
+      console.log("prodcut id is ");
+      console.log(product);
+      console.log("------------");
 
       Promise.all([
         commerceApi.findProductById(product),

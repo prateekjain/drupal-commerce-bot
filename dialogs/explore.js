@@ -33,7 +33,7 @@ module.exports = function (bot) {
           session,
           'I am sorry, what would you like me to look up for you?'
         );
-      } else {
+      } else {        
         next({ response: query });
       }
     },
@@ -41,13 +41,15 @@ module.exports = function (bot) {
 
       const query = args.response;
 
+      session.sendTyping();
+      
       builder.Prompts.text(
         session,
         `Got it. Let me find ${query} for you`
       );
 
-      session.sendTyping();
-
+      
+      session.endDialog(); //enddialog within the search API call wasn't ending the session
       commerceApi.search(query).then((searchResult) => {
         if (searchResult && searchResult.length) {
           builder.Prompts.text(
@@ -55,14 +57,9 @@ module.exports = function (bot) {
             `We have found ${searchResult.length} search results for you`
           );
 
-          var productCards = getCardsAttachments(session, searchResult);
+          console.log(searchResult);
 
-          // create reply with Carousel AttachmentLayout
-          var reply = new builder.Message(session)
-            .attachmentLayout(builder.AttachmentLayout.carousel)
-            .attachments(productCards);
-
-          session.endDialog(reply);
+          listProducts(session, searchResult);
 
         }
         else {
@@ -71,143 +68,39 @@ module.exports = function (bot) {
           );
         }
       });
-
-
-      /* session.endDialog(
-        `I tried looking for ${query} but I couldn't find anything, sorry!`
-      ); */
-
-      // ToDo: also need to search for products in the category
-      /* search.find(query).then(({ subcategories, products }) => {
-        if (subcategories.length) {
-          session.privateConversationData = Object.assign(
-            {},
-            session.privateConversationData,
-            {
-              list: {
-                type: 'categories',
-                data: subcategories
-              },
-              pagination: {
-                start: 0
-              }
-            }
-          );
-          session.save();
-
-          listCategories(session, subcategories);
-        } else if (products.length) {
-          session.privateConversationData = Object.assign(
-            {},
-            session.privateConversationData,
-            {
-              list: {
-                type: 'products',
-                data: products
-              },
-              pagination: {
-                start: 0
-              }
-            }
-          );
-          session.save();
-
-          listProducts(session, products);
-        } else {
-          session.endDialog(
-            `I tried looking for ${query} but I couldn't find anything, sorry!`
-          );
-        }
-      }); */
-    }
-  ]);
-
-  bot.dialog('/next', [
-    function (session, args, next) {
-      if (
-        !session.privateConversationData ||
-        !session.privateConversationData.list
-      ) {
-        return session.endDialog('Sorry, I have no active list to scroll');
-      }
-
-      const list = session.privateConversationData.list;
-      const pagination = session.privateConversationData.pagination;
-
-      switch (list.type) {
-        case 'products':
-          session.privateConversationData = Object.assign(
-            {},
-            session.privateConversationData,
-            {
-              pagination: {
-                start: pagination.start + 4
-              }
-            }
-          );
-          session.save();
-
-          return listProducts(session, list.data, pagination.start + 4);
-
-        case 'categories':
-          // ToDo: this is updating the state. Time to use Redux maybe?
-          session.privateConversationData = Object.assign(
-            {},
-            session.privateConversationData,
-            {
-              pagination: {
-                start: pagination.start + 6
-              }
-            }
-          );
-          session.save();
-
-          return listCategories(session, list.data, pagination.start + 6);
-      }
-
-      session.endDialog(
-        'Something funny happened and I started wondering who I am'
-      );
     }
   ]);
 };
 
 
-function getCardsAttachments(session, searchResult) {
-
-  var productCardArray = [];
-  if (searchResult && searchResult.length) {
-    for (i = 0; i < searchResult.length; i++) {
-      productCardArray.push(
-        new builder.ThumbnailCard(session)
-          .title(searchResult[i].title)
-          .subtitle(searchResult[i].type)
-          .text(searchResult[i].body)
-          .buttons([
-            builder.CardAction.postBack(session, `@show:${searchResult[i].product_id}`, 'Show Details')
-          ])
-          .images([
-            builder.CardImage.create(session, constantsList.baseURL + searchResult[i].field_image).tap(
-              builder.CardAction.postBack(session, `@show:${searchResult[i].product_id}`)
-            )
-          ])
-      );
-    }
+const listProducts = (session, products, start = 0) => {
+  // ToDo: need to filter out products with very small @search.score
+  const slice = products.slice(start, start + 4);
+  if (slice.length === 0) {
+    return session.endDialog(
+      "That's it. You have seen it all. See anything you like? Just ask for it."
+    );
   }
-  return productCardArray;
-}
 
+  const cards = slice.map(p =>
+    new builder.ThumbnailCard(session)
+      .title(p.title)
+      .subtitle(p.type)
+      .text(p.body)
+      .buttons([
+        builder.CardAction.postBack(session, `@show:${p.product_id}`, 'Choose Variants')
+      ])
+      .images([
+        builder.CardImage.create(session, constantsList.baseURL + p.field_image).tap(
+          builder.CardAction.postBack(session, `@show:${p.product_id}`)
+        )
+      ])
+  );
 
-/* module.exports = function(bot) {
-  bot.dialog('/explore', [
-    function(session, args, next) {
-
-      const query = extractQuery(session, args);
-
-      const lastVisit = session.userData.lastVisit;
-              
-      session.send('Good to know you are exploring...');
-      session.endDialog('Explore end');
-    }
-  ]);
-}; */
+  session.sendTyping();
+  session.endDialog(
+    new builder.Message(session)
+      .attachments(cards)
+      .attachmentLayout(builder.AttachmentLayout.carousel)
+  );
+};

@@ -3,10 +3,9 @@ var constantsList = require('../constantsList');
 
 module.exports = {
     search: function (searchItem) {
-
-        console.log("The searchitem is " + searchItem);
+        
         var options = {
-            url: constantsList.baseURL + `/rest/products-search?search_api_fulltext=${searchItem}&_format=hal_json`,
+            url: constantsList.baseURL + `/rest/products-search?search_api_fulltext=${searchItem}&_format=json`,
             headers: {
                 //'Authorization': 'Basic YWRtaW46YWRtaW4=',
                 'Content-Type': 'application/hal_json'
@@ -47,8 +46,43 @@ module.exports = {
         //     console.log(JSON.parse(body));
         // });
     },
-    findProductById: function(product) {
+    findProductById: function(productId) {
         //return this.search(`$filter=id eq '${product}'`);
-        return this.search(`mauris`);
+        var options = {
+            url: constantsList.baseURL + `/rest/product/${productId}&_format=json`,
+            headers: {
+                //'Authorization': 'Basic YWRtaW46YWRtaW4=',
+                'Content-Type': 'application/hal_json'
+            }
+        };
+
+        console.log(options.url);
+
+        function callback(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                //console.log("in here");
+                var info = JSON.parse(body);
+                console.log(info);
+                return info;
+            }
+            return;
+        }
+
+        return new Promise(function (resolve, reject) {
+            Request.get(options, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    console.log("----Success---");
+                    //console.log(JSON.parse(body));
+                    resolve(JSON.parse(body));
+                }
+                else {
+                    console.log("----Failure----");
+                    console.log(error);
+                    console.log(response.statusCode);
+                    //console.log(response);
+                    reject(error);
+                }                
+            });
+        })
     },
 }
