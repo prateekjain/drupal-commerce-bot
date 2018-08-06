@@ -116,8 +116,6 @@ module.exports = {
 
         function callback(error, response, body) {
             if (!error && response.statusCode == 200) {
-                console.log("the response is ");
-                console.log(response);                
                 var info = JSON.parse(body);                
                 return info;
             }
@@ -136,14 +134,45 @@ module.exports = {
             });
         })
     },
+    completeOrder: function(session, orderId, email) {        
+        var postData = {"commerce_order": `${orderId}`, "email": `${email}`};        
+        
+        var options = {
+            url: constantsList.baseURL + `/api/rest/checkout/complete-order/${orderId}?&_format=json`,
+            jar:getCookies(session),
+            headers: {
+                //'Authorization': 'Basic YWRtaW46YWRtaW4=',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(postData)
+        };
+
+        function callback(error, response, body) {
+            if (!error && response.statusCode == 200) {                
+                var info = JSON.parse(body);
+                return info;
+            }
+            return;
+        }
+
+        return new Promise(function (resolve, reject) {
+            Request.patch(options, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    setCookies(session, response);
+                    resolve(JSON.parse(body));
+                }
+                else {                    
+                    reject(error);
+                }                
+            });
+        })
+    },
 }
 
 function setCookies(session, response){
 
     if(response.headers['set-cookie'] && !session.userData.drupalSession) {
-        session.userData.drupalSession = response.headers['set-cookie'];
-        console.log("session drupal -----------------------------------------------");
-        console.log(session.userData.drupalSession);
+        session.userData.drupalSession = response.headers['set-cookie'];        
     }    
 }
 
@@ -151,8 +180,6 @@ function getCookies(session) {
     var cookieJar = Request.jar();
     if(session.userData.drupalSession)
     {   
-        console.log("getting session drupal");
-        console.log(session.userData.drupalSession);
         var cookie = Request.cookie("" + session.userData.drupalSession);   
         cookieJar.setCookie(cookie, constantsList.baseURL);
         

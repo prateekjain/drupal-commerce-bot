@@ -53,7 +53,7 @@ module.exports = function (bot) {
       const item = session.dialogData.product;
       // ToDo: response comes back as [true] if the user accepted the single color there was
       console.log(args.response);
-      session.dialogData.size = args.response || item.crust[0];
+      session.dialogData.size = args.response || item.size[0];
       session.save();
 
 

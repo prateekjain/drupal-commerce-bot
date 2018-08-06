@@ -10,10 +10,23 @@ module.exports = function (bot) {
       session.sendTyping();
 
       commerceApi.getCartDetails(session).then((response) => {
-        console.log("cart details are --- ");
-        console.log(response);
+
+        if (response.length > 0) {
+          var orderDetails = response[0];
+          //showCartCard(session,orderId,paymentMethod, totalPrice);
+          session.send('Alright! You are all set!');
+          session.endDialog(
+            new builder.Message(session).addAttachment(showCartCard(session, orderDetails))
+          );
+        }
+        else {
+          session.send('Your cart is empty!');
+          session.reset('/categories');
+        }
+
       });
-      session.endDialog();
+
+      //      session.endDialog();
       //const cart = session.privateConversationData.cart;
 
       /* var testCheckout = true;
@@ -28,32 +41,36 @@ module.exports = function (bot) {
         session.endDialog(
           new builder.Message(session).addAttachment(showCartCard(session))
         );
-      }   */    
+      }   */
     }
   ]);
 };
 
 
-function showCartCard(session) {
+function showCartCard(session, orderDetails) {
+
+  var orderId = orderDetails.order_id;
+  console.log("order id " + orderId);
+  var paymentMethod = "Cash";
+  var totalPrice = orderDetails.total_price.formatted;
+
+  const items = orderDetails.order_items.map(item =>
+    new builder.ReceiptItem.create(session, item.total_price.formatted, item.title + " X " + item.quantity)
+      .quantity(item.quantity)
+  );
 
   return new builder.ReceiptCard(session)
-    .title('John Doe')
+    .title('Order Summary')
     .facts([
-      builder.Fact.create(session, '1234', 'Order Number'),
-      builder.Fact.create(session, 'VISA 5555-****', 'Payment Method')
+      builder.Fact.create(session, orderId, 'Order Number'),
+      builder.Fact.create(session, paymentMethod, 'Payment Method')
     ])
-    .items([
-      builder.ReceiptItem.create(session, '$ 38.45', 'Data Transfer')
-        .quantity(368)
-        .image(builder.CardImage.create(session, 'https://github.com/amido/azure-vector-icons/raw/master/renders/traffic-manager.png')),
-      builder.ReceiptItem.create(session, '$ 45.00', 'App Service')
-        .quantity(720)
-        .image(builder.CardImage.create(session, 'https://github.com/amido/azure-vector-icons/raw/master/renders/cloud-service.png'))
-    ])
-    .tax('$ 7.50')
-    .total('$ 90.95')
+    .items(items)
+    //.tax('$ 7.50')
+    .total(totalPrice)
     .buttons([
-      builder.CardAction.postBack(session, "Checkout", "Checkout")
+      builder.CardAction.postBack(session, "Checkout", "Checkout"),
+      builder.CardAction.postBack(session, "@list", "Add More")
       //builder.CardAction.openUrl(session, 'https://azure.microsoft.com/en-us/pricing/', 'More Information')
       //  .image('https://raw.githubusercontent.com/amido/azure-vector-icons/master/renders/microsoft-azure.png')
     ]);
