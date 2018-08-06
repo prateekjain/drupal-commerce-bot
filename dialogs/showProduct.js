@@ -55,7 +55,9 @@ module.exports = function (bot) {
       console.log(product);
       console.log("------------");
 
-      Promise.all([
+
+      // Get the product variations and pass it to next..
+      /* Promise.all([
         commerceApi.findProductById(product),
         //search.findProductsByTitle(product)
       ])
@@ -94,34 +96,55 @@ module.exports = function (bot) {
         })
         .catch(err => {
           console.error(err);
-        });
+        }); */
+      session.dialogData.product = product;
+      next();
     },
     function (session, args, next) {
-      if (args.response) {
-        session.beginDialog('/choseVariant', {
-          product: session.dialogData.product
-        });
-      } else if (session.message.text === 'no') {
-        session.endDialog('Alright. I am here if you need anything else');
-      } else {
-        // no variants, can go straight to "add to card"
-        next();
-      }
+      session.beginDialog('/choseVariant', {
+        product: session.dialogData.product
+      });
     },
     function (session, args, next) {
-      const color =
+      console.log("variations here --- ");
+      console.log(args);
+      const crust =
         args &&
         args.response &&
-        args.response.color &&
-        args.response.color.entity;
+        args.response.crust &&
+        args.response.crust.entity;
       const size =
         args &&
         args.response &&
         args.response.size &&
         args.response.size.entity;
 
+      const quantity =
+        args &&
+        args.response &&
+        args.response.quantity &&
+        args.response.quantity.entity;
+
       // ToDo: I wonder if it's still here after we ran another dialog on top of the current one or if I need to cary it back
-      const product = session.dialogData.product;
+      const productId = session.dialogData.product;
+      
+      const product = {
+        title: "Test title",
+        description: "Test Description",
+        image: ""
+      }
+
+      const variant = {
+        crust : crust,
+        size: size,
+        quantity: quantity,
+        price: "5",
+        id: "10"
+      };
+      session.sendTyping();
+      session.reset('/showVariant', { product, variant });
+
+      //Find variant details
 
       /*  search.findVariantForProduct(product.id, color, size).then(variant => {
          if (color || size) {

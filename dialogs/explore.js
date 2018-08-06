@@ -50,7 +50,7 @@ module.exports = function (bot) {
 
       
       session.endDialog(); //enddialog within the search API call wasn't ending the session
-      commerceApi.search(query).then((searchResult) => {
+      commerceApi.search(session, query).then((searchResult) => {
         if (searchResult && searchResult.length) {
           builder.Prompts.text(
             session,

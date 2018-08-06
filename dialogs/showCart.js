@@ -9,9 +9,14 @@ module.exports = function (bot) {
 
       session.sendTyping();
 
-      const cart = session.privateConversationData.cart;
+      commerceApi.getCartDetails(session).then((response) => {
+        console.log("cart details are --- ");
+        console.log(response);
+      });
+      session.endDialog();
+      //const cart = session.privateConversationData.cart;
 
-      var testCheckout = true;
+      /* var testCheckout = true;
       if ((!cart || !cart.length) && !testCheckout) {
       //if (!cart || !cart.length) {
         session.send(
@@ -23,7 +28,7 @@ module.exports = function (bot) {
         session.endDialog(
           new builder.Message(session).addAttachment(showCartCard(session))
         );
-      }      
+      }   */    
     }
   ]);
 };

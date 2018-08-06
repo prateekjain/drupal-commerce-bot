@@ -161,6 +161,7 @@ bot.dialog('/confused', [
 
 bot.dialog('/reset', [
     function (session, args, next) {
+        session.userData.drupalSession = '';
         session.endConversation(['Ok. Let\'s start again !! ', 'Wiping my memory. Let\'s start again !!']);        
     }
 ]);
