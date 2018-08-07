@@ -104,7 +104,6 @@ function listCategoriesCard(session) {
 
 /** Helper function to wrap SSML stored in the prompts file with <speak/> tag. */
 function speak(session, prompt) {
-    var localized = session.gettext(prompt);
-    console.log(localized);
+    var localized = session.gettext(prompt);    
     return ssml.speak(localized);
 }

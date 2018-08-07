@@ -50,7 +50,7 @@ module.exports = function (bot) {
 function showCartCard(session, orderDetails) {
 
   var orderId = orderDetails.order_id;
-  console.log("order id " + orderId);
+  
   var paymentMethod = "Cash";
   var totalPrice = orderDetails.total_price.formatted;
 

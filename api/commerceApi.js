@@ -32,22 +32,47 @@ module.exports = {
                 }                
             });
         })
-
-        // Request.get("http://httpbin.org/ip", (error, response, body) => {
-        //     if (error) {
-        //         return console.log(error);
-        //     }
-        //     console.log(JSON.parse(body));
-        // });
+       
     },
     findProductById: function(session, productId) {
         //return this.search(`$filter=id eq '${product}'`);
         var options = {
-            url: constantsList.baseURL + `/rest/product/${productId}&_format=json`,
+            url: constantsList.baseURL + `/api/rest/products/${productId}?&_format=json`,
             jar:getCookies(session),
             headers: {
                 //'Authorization': 'Basic YWRtaW46YWRtaW4=',
-                'Content-Type': 'application/hal_json'
+                'Content-Type': 'application/json',
+            }
+        };
+
+        function callback(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                var info = JSON.parse(body);                
+                return info;
+            }
+            return;
+        }
+
+        return new Promise(function (resolve, reject) {
+            Request.get(options, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    setCookies(session, response);
+                    resolve(JSON.parse(body));
+                }
+                else {                    
+                    reject(error);
+                }                
+            });
+        })
+    },
+    getProductDetails: function(session, productId) {
+        //return this.search(`$filter=id eq '${product}'`);
+        var options = {
+            url: constantsList.baseURL + `/product/${productId}?&_format=json`,
+            jar:getCookies(session),
+            headers: {
+                //'Authorization': 'Basic YWRtaW46YWRtaW4=',
+                'Content-Type': 'application/json',
             }
         };
 

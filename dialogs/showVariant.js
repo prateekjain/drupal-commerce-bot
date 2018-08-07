@@ -3,9 +3,6 @@ const builder = require('botbuilder');
 const showVariant = function(session, product, variant) {
   session.sendTyping();
 
-  console.log("variant details");
-  console.log(variant);
-
   const description =
     `${variant.crust ? 'Crust - ' + variant.crust + ',\n' : ''}` +
     `${variant.size ? 'Size - ' + variant.size + ',\n' : ''}` +

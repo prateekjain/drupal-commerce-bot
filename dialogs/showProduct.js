@@ -1,7 +1,7 @@
 const builder = require('botbuilder');
 const commerceApi = require('../api/commerceApi');
 
-const showProduct = function (session, product) {
+/* const showProduct = function (session, product) {
   session.sendTyping();
 
   const tile = new builder.HeroCard(session)
@@ -23,7 +23,7 @@ const showProduct = function (session, product) {
     .images([builder.CardImage.create(session, product.image)]);
 
   session.send(new builder.Message(session).attachments([tile]));
-};
+}; */
 
 module.exports = function (bot) {
   bot.dialog('/showProduct', [
@@ -50,64 +50,33 @@ module.exports = function (bot) {
     function (session, args, next) {
       session.sendTyping();
 
-      const product = args.response;
-      console.log("prodcut id is ");
-      console.log(product);
-      console.log("------------");
+      const productId = args.response;
+      session.dialogData.productId = productId;
 
+      commerceApi.findProductById(session, productId).then((response) => {
 
-      // Get the product variations and pass it to next..
-      /* Promise.all([
-        commerceApi.findProductById(product),
-        //search.findProductsByTitle(product)
-      ])
-        .then(([product, products]) => {
-          const item = product.concat(products)[0];
-          if (!item) {
-            session.endDialog(
-              "Sorry, I couldn't find the product you asked about"
-            );
-            return Promise.reject();
-          } else {
-            return item;
-          }
-        })
-        .then(item => {
-          showProduct(session, item);
-          return item;
-        })
-        .then(item => {
-          session.dialogData.product = item;
+        if (response.length > 0) {
+          
+          session.dialogData.product = response;
+          next();
+        }
+        else {
+          session.endDialog(
+            "Sorry, I couldn't find the product you asked about"
+          );
+          session.reset('/categories');
+        }
 
-          if (
-            item.modifiers.length === 0 ||
-            (item.size.length <= 1 && item.color.length <= 1)
-          ) {
-            next();
-          } else {
-            builder.Prompts.confirm(
-              session,
-              `This product comes in differnet ` +
-              item.modifiers.map(mod => `${mod}s`).join(' and ') +
-              '. Would you like to choose one that fits you?',
-              { listStyle: builder.ListStyle.button }
-            );
-          }
-        })
-        .catch(err => {
-          console.error(err);
-        }); */
-      session.dialogData.product = product;
-      next();
-    },
-    function (session, args, next) {
-      session.beginDialog('/choseVariant', {
-        product: session.dialogData.product
       });
     },
     function (session, args, next) {
-      console.log("variations here --- ");
-      console.log(args);
+      session.beginDialog('/choseVariant', {
+        product: session.dialogData.product,
+        productId: session.dialogData.productId
+      });
+    },
+    function (session, args, next) {
+      
       const crust =
         args &&
         args.response &&
@@ -126,20 +95,24 @@ module.exports = function (bot) {
         args.response.quantity.entity;
 
       // ToDo: I wonder if it's still here after we ran another dialog on top of the current one or if I need to cary it back
-      const productId = session.dialogData.product;
+      const productVariations = session.dialogData.product;
       
+      var selectedProductVariation = productVariations.filter(function(item) {
+        return (item.size === size && item.crust === crust);
+      })[0];
+
       const product = {
-        title: "Test title",
-        description: "Test Description",
-        image: ""
+        title: selectedProductVariation.title,
+        description: selectedProductVariation.size + " - " + selectedProductVariation.crust,
+        image: selectedProductVariation.image
       }
 
       const variant = {
-        crust : crust,
+        crust: crust,
         size: size,
         quantity: quantity,
-        price: "5",
-        id: "10"
+        price: selectedProductVariation.price,
+        id: selectedProductVariation.commerce_product_variation_id
       };
       session.sendTyping();
       session.reset('/showVariant', { product, variant });

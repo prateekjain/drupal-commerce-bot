@@ -10,9 +10,6 @@ module.exports = function(bot) {
         return session.reset('/confused');
       }
 
-      console.log("in add to cart args");
-      console.log(args);
-
       const product = builder.EntityRecognizer.findEntity(
         args.entities,
         'Id'
@@ -37,37 +34,11 @@ module.exports = function(bot) {
 
       const parts = text.split('-');
       
-      //@TODO : overriding this with variant id
-      //const productId = parts[0];
-      const productId = 28;
+      const productId = parts[0];
       const quantity = parts[1];
 
-      console.log("productid " + productId);
-      console.log("quantity " + quantity);
-
-      commerceApi.addToCart(session,productId,quantity).then((response) => {
-        
-        console.log("add to cart successful");
-        console.log(response);
-
-        session.reset('/showCart');
-        
-        /* if (searchResult && searchResult.length) {
-          builder.Prompts.text(
-            session,
-            `We have found ${searchResult.length} search results for you`
-          );
-
-          console.log(searchResult);
-
-          listProducts(session, searchResult);
-
-        }
-        else {
-          session.endDialog(
-            `I tried looking for ${query} but I couldn't find anything, sorry!`
-          );
-        } */
+      commerceApi.addToCart(session,productId,quantity).then((response) => {              
+        session.reset('/showCart');               
       });
       
       //session.reset('/showCart');

@@ -27,10 +27,7 @@ module.exports = function (bot) {
 
       builder.Prompts.text(session, 'Your order is almost complete. What is your email address?');
     },
-    function (session, args, next) {
-      console.log("the response here is ");
-      console.log(args.response);
-
+    function (session, args, next) {      
       commerceApi.completeOrder(session,session.dialogData.orderId,args.response).then((response) => {
         session.endDialog(`Your order id ${response.order_id[0].value} is confirmed. Thank you for using Pizza Bot service.`);
       });   

@@ -1,37 +1,68 @@
 const builder = require('botbuilder');
+const commerceApi = require('../api/commerceApi');
 
 module.exports = function (bot) {
   bot.dialog('/choseVariant', [
     function (session, args, next) {
 
-      const item = {
-        title: "marg pizza",
-        //modifiers: ["crust", "size"],
-        modifiers: [],
-        crust: ["Thin crust", "Regular"],
-        size: ["Medium", "Large"],
-        quantity: ["1","2","3","4","5"] //Add option for more and handle that
-      }
-      session.dialogData.product = item;
-      //const item = (session.dialogData.product = args.product);
-      if (!item.modifiers.includes('crust')) {
-        next();
-      } else {
-        builder.Prompts.choice(
-          session,
-          `Please select crust you'd like best for your ${item.title}`,
-          item.crust,
-          {
-            listStyle: builder.ListStyle.button
+      session.sendTyping();
+      const productId = args.productId;
+      const productVariations = args.product;
+      commerceApi.getProductDetails(session, productId).then((response) => {
+
+        if (response) {
+          var modifiersArray= [];
+          
+          const sizeArray = getUniqueValuesOfKey(productVariations,"size");
+          
+          if(sizeArray.length > 0) {
+            modifiersArray.push("size");
           }
-        );
-      }
+
+          const crustArray = getUniqueValuesOfKey(productVariations,"crust");
+          
+          if(crustArray.length > 0) {
+            modifiersArray.push("crust");
+          }
+
+          const quantityArray = ["1","2","3","4","5"];
+
+          const item = {
+            title: response.title[0].value,
+            modifiers: modifiersArray,            
+            crust: crustArray,
+            size: sizeArray,
+            quantity: quantityArray //Add option for more and handle that
+          }
+
+          session.dialogData.product = item;
+          //const item = (session.dialogData.product = args.product);
+          if (!item.modifiers.includes('crust')) {
+            next();
+          } else {
+            builder.Prompts.choice(
+              session,
+              `Please select crust you'd like best for your ${item.title}`,
+              item.crust,
+              {
+                listStyle: builder.ListStyle.button
+              }
+            );
+          }
+        }
+        else {
+          session.endDialog(
+            "Sorry, I couldn't find the product you asked about"
+          );
+          session.reset('/categories');
+        }
+
+      });
     },
     function (session, args, next) {
 
       const item = session.dialogData.product;
-      // ToDo: response comes back as [true] if the user accepted the single color there was
-      console.log(args.response);
+      
       session.dialogData.crust = args.response || item.crust[0];
       session.save();
 
@@ -51,8 +82,7 @@ module.exports = function (bot) {
     function (session, args, next) {
 
       const item = session.dialogData.product;
-      // ToDo: response comes back as [true] if the user accepted the single color there was
-      console.log(args.response);
+      
       session.dialogData.size = args.response || item.size[0];
       session.save();
 
@@ -76,7 +106,7 @@ module.exports = function (bot) {
       const item = session.dialogData.product;
 
       session.dialogData.quantity = args.response || item.quantity[0];
-      session.save();
+      session.save();      
 
       session.endDialogWithResult({
         response: {
@@ -88,3 +118,10 @@ module.exports = function (bot) {
     }
   ]);
 };
+
+function getUniqueValuesOfKey(array, key){
+  return array.reduce(function(carry, item){
+    if(item[key] && !~carry.indexOf(item[key])) carry.push(item[key]);
+    return carry;
+  }, []);
+}
