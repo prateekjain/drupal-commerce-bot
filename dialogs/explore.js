@@ -63,6 +63,7 @@ module.exports = function (bot) {
           session.endDialog(
             `I tried looking for ${query} but I couldn't find anything, sorry!`
           );
+          session.reset('/categories');
         }
       });
     }

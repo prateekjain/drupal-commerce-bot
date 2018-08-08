@@ -151,18 +151,22 @@ bot.dialog('/confused', [
             session.endDialog(
                 "Sorry, I didn't understand you or maybe just lost track of our conversation"
             );
+            session.reset('/categories');
         } else {
             session.endDialog();
         }
     }
 ]);
 
-//bot.on('routing', smiles.smileBack.bind(smiles));
+bot.on('routing', smiles.smileBack.bind(smiles));
 
 bot.dialog('/reset', [
     function (session, args, next) {
-        session.userData.drupalSession = '';
-        session.endConversation(['Ok. Let\'s start again !! ', 'Wiping my memory. Let\'s start again !!']);        
+
+        session.endDialog(
+            "Ok. Lets start again!"
+        );
+        session.reset('/categories');        
     }
 ]);
 

@@ -9,7 +9,9 @@ module.exports = function (bot) {
       session.sendTyping();
 
       session.endDialog(
-        listCategoriesCard(session)
+        new builder.Message(session).addAttachment(createThumbnailCard(session))
+        //createThumbnailCard(session)
+        //listCategoriesCard(session)
       );
 
       //session.say("This output speech uses SSML.","<speak>This output speech uses SSML.</speak>");
@@ -102,8 +104,39 @@ function listCategoriesCard(session) {
   return adaptiveCardMessage;
 }
 
+function createThumbnailCard(session) {
+  return new builder.HeroCard(session)
+      .title('What would you like to order?')
+      //.speak(speak(session, 'show_category_ssml'))
+      //.subtitle('Your bots — wherever your users are talking')
+      //.text('Build and connect intelligent bots to interact with your users naturally wherever they are, from text/sms to Skype, Slack, Office 365 mail and other popular services.')
+      .images([
+          //builder.CardImage.create(session, 'https://master-7rqtwti-rvsuscbxmkade.us.platform.sh/sites/default/files/inline-images/Pizza.png'),
+          builder.CardImage.create(session, 'https://master-7rqtwti-rvsuscbxmkade.us.platform.sh/sites/default/files/inline-images/Pizza-Bot-Logo-03.png')
+          //builder.CardImage.create(session, 'https://master-7rqtwti-rvsuscbxmkade.us.platform.sh/sites/default/files/inline-images/Cold-Drink-Can.png')
+                    
+      ])
+      .buttons([
+          builder.CardAction.postBack(session, 'I want some pizza', 'Pizza'),
+          builder.CardAction.postBack(session, 'I want some drinks', 'Drinks')
+      ]);
+}
+
 /** Helper function to wrap SSML stored in the prompts file with <speak/> tag. */
 function speak(session, prompt) {
     var localized = session.gettext(prompt);    
     return ssml.speak(localized);
+}
+
+function createHeroCard(session) {
+  return new builder.HeroCard(session)
+      .title('BotFramework Hero Card')
+      .subtitle('Your bots — wherever your users are talking')
+      .text('Build and connect intelligent bots to interact with your users naturally wherever they are, from text/sms to Skype, Slack, Office 365 mail and other popular services.')
+      .images([
+          builder.CardImage.create(session, 'https://sec.ch9.ms/ch9/7ff5/e07cfef0-aa3b-40bb-9baa-7c9ef8ff7ff5/buildreactionbotframework_960.jpg')
+      ])
+      .buttons([
+          builder.CardAction.openUrl(session, 'https://docs.microsoft.com/bot-framework', 'Get Started')
+      ]);
 }
