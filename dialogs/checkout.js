@@ -28,8 +28,15 @@ module.exports = function (bot) {
       builder.Prompts.text(session, 'Your order is almost complete. What is your email address?');
     },
     function (session, args, next) {      
-      commerceApi.completeOrder(session,session.dialogData.orderId,args.response).then((response) => {
-        session.endDialog(`Your order id ${response.order_id[0].value} is confirmed. Thank you for using Pizza Bot service.`);
+      session.dialogData.email = args.response;
+      session.save();
+
+      builder.Prompts.text(session, 'One last thing. Where do you want your order to be delivered?');
+    },
+    function (session, args, next) {  
+      const address = args.response;    
+      commerceApi.completeOrder(session,session.dialogData.orderId,session.dialogData.email).then((response) => {
+        session.endDialog(`Your order id ${response.order_id[0].value} is confirmed. Thank you for using Pizza Bot service. Your order will be delievered in 30 min at ${address}`);
       });   
     }
 
