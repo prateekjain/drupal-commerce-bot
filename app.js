@@ -17,7 +17,8 @@ const dialog = {
     showVariant: require('./dialogs/showVariant'),
     addToCart: require('./dialogs/addToCart'),
     showCart: require('./dialogs/showCart'),
-    checkout: require('./dialogs/checkout')
+    checkout: require('./dialogs/checkout'),
+    emptyCart:require('./dialogs/emptyCart')
 }
 
 // Setup Express Server
@@ -131,6 +132,7 @@ intents.matches('ShowCart', '/showCart');
 intents.matches('Checkout', '/checkout');
 intents.matches('Reset', '/reset');
 intents.matches('Smile', '/smileBack');
+intents.matches('EmptyCart', '/emptyCart');
 intents.onDefault('/confused');
 
 bot.dialog('/', intents);
@@ -143,6 +145,7 @@ dialog.showVariant(bot);
 dialog.addToCart(bot);
 dialog.showCart(bot);
 dialog.checkout(bot);
+dialog.emptyCart(bot);
 
 bot.dialog('/confused', [
     function (session, args, next) {
@@ -164,7 +167,7 @@ bot.dialog('/reset', [
     function (session, args, next) {
 
         session.endDialog(
-            "Ok. Lets start again!"
+            "Sorry, I didn't understand you or maybe just lost track of our conversation"
         );
         session.reset('/categories');        
     }

@@ -70,7 +70,8 @@ function showCartCard(session, orderDetails) {
     .total(totalPrice)
     .buttons([
       builder.CardAction.postBack(session, "Checkout", "Checkout"),
-      builder.CardAction.postBack(session, "@list", "Add More")
+      builder.CardAction.postBack(session, "@list", "Add More"),
+      builder.CardAction.postBack(session, "@empty", "Empty Cart")
       //builder.CardAction.openUrl(session, 'https://azure.microsoft.com/en-us/pricing/', 'More Information')
       //  .image('https://raw.githubusercontent.com/amido/azure-vector-icons/master/renders/microsoft-azure.png')
     ]);
