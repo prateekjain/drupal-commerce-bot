@@ -36,7 +36,7 @@ module.exports = function (bot) {
     function (session, args, next) {  
       const address = args.response;    
       commerceApi.completeOrder(session,session.dialogData.orderId,session.dialogData.email).then((response) => {
-        session.endDialog(`Your order id ${response.order_id[0].value} is confirmed. Thank you for using Pizza Bot service. Your order will be delievered in 30 min at ${address}`);
+        session.endDialog(`Your order id ${response.order_id[0].value} is confirmed. Thank you for using Pizza Bot service. Your order will be delivered in 30 min at ${address}`);
       });   
     }
 
