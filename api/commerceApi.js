@@ -192,6 +192,37 @@ module.exports = {
             });
         })
     },
+    clearCart: function(session, orderId) {        
+        
+        var options = {
+            url: constantsList.baseURL + `/cart/${orderId}/items?&_format=json`,
+            jar:getCookies(session),
+            headers: {
+                //'Authorization': 'Basic YWRtaW46YWRtaW4=',
+                'Content-Type': 'application/json',
+            }        
+        };
+
+        function callback(error, response, body) {
+            if (!error && response.statusCode == 200) {                
+                var info = JSON.parse(body);                
+                return info;
+            }
+            return;
+        }
+
+        return new Promise(function (resolve, reject) {
+            Request.delete(options, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    setCookies(session, response);
+                    resolve(JSON.parse(body));
+                }
+                else {                    
+                    reject(error);
+                }                
+            });
+        })
+    },
 }
 
 function setCookies(session, response){

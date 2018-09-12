@@ -11,7 +11,7 @@ module.exports = function (bot) {
 
       commerceApi.getCartDetails(session).then((response) => {
 
-        if (response.length > 0) {
+        if (response.length > 0 && response[0].order_items.length > 0) {
           var orderDetails = response[0];
           //showCartCard(session,orderId,paymentMethod, totalPrice);
           session.send('Alright! You are all set!');
@@ -47,8 +47,7 @@ module.exports = function (bot) {
 };
 
 
-function showCartCard(session, orderDetails) {
-
+function showCartCard(session, orderDetails) {  
   var orderId = orderDetails.order_id;
   
   var paymentMethod = "Cash";
@@ -71,7 +70,7 @@ function showCartCard(session, orderDetails) {
     .buttons([
       builder.CardAction.postBack(session, "Checkout", "Checkout"),
       builder.CardAction.postBack(session, "@list", "Add More"),
-      builder.CardAction.postBack(session, "@empty", "Empty Cart")
+      builder.CardAction.postBack(session, `@empty:${orderId}`, "Empty Cart")      
       //builder.CardAction.openUrl(session, 'https://azure.microsoft.com/en-us/pricing/', 'More Information')
       //  .image('https://raw.githubusercontent.com/amido/azure-vector-icons/master/renders/microsoft-azure.png')
     ]);

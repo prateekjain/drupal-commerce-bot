@@ -75,7 +75,14 @@ const parse = {
     intent: 'AddToCart',
     score: 1
   }),
-  empty: () => ({
+  empty: (context, what) => ({
+    entities: [
+      {
+        entity: what,
+        score: 1,
+        type: 'Id'
+      }
+    ],
     intent: 'EmptyCart',
     score: 1
   }),
