@@ -13,7 +13,7 @@ module.exports = function (bot) {
             const orderId = builder.EntityRecognizer.findEntity(
                 args.entities,
                 'Id'
-            );            
+            );
 
             if (!orderId || !orderId.entity) {
                 builder.Prompts.text(
@@ -21,7 +21,7 @@ module.exports = function (bot) {
                     'I am sorry, something went wrong.'
                 );
                 session.reset('/showCart');
-            } 
+            }
 
             session.dialogData.orderId = orderId.entity;
             session.save();
@@ -34,22 +34,29 @@ module.exports = function (bot) {
                     listStyle: builder.ListStyle.button
                 }
             );
-            
+
         },
 
         function (session, args, next) {
 
             session.sendTyping();
             const text = args.response;
-            if (session.message.text === 'Yes') {
-                //Call REST API to empty cart
-                commerceApi.clearCart(session, session.dialogData.orderId).then((response) => {
-                    session.reset('/showCart');                    
-                });
+            try {
+                if (session.message.text === 'Yes') {
+                    
+                    //Call REST API to empty cart
+                    commerceApi.clearCart(session, session.dialogData.orderId).then((response) => {
+                        session.reset('/showCart');                    
+                    });
+                }
+                else {                
+                    session.reset('/showCart');
+                }
+            } catch (e) {
+                console.log(e);
             }
-            else {
-                session.reset('/showCart');
-            }            
+
+
         }
     ]);
 };

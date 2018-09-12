@@ -213,11 +213,11 @@ module.exports = {
 
         return new Promise(function (resolve, reject) {
             Request.delete(options, function (error, response, body) {
-                if (!error && response.statusCode == 200) {
+                if (!error && response.statusCode == 204) {
                     setCookies(session, response);
-                    resolve(JSON.parse(body));
+                    resolve();
                 }
-                else {                    
+                else {                       
                     reject(error);
                 }                
             });
